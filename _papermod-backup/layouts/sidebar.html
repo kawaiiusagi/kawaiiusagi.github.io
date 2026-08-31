@@ -1,0 +1,29 @@
+<!--
+  이 파일은 layouts/partials/sidebar.html 에 저장하세요.
+  프로필 사진, 소개, 이메일, (글 페이지에서는) 목차를 보여주는 왼쪽 고정 사이드바입니다.
+-->
+<aside class="sidebar-fixed">
+
+  <!-- 프로필 사진: static/img/profile.png 파일을 사용합니다 -->
+  <img class="sidebar-avatar" src="{{ "img/profile.png" | absURL }}" alt="profile" />
+
+  <!-- 이름 -->
+  <div class="sidebar-title">{{ .Site.Title }}</div>
+
+  <!-- 소개 문구: hugo.toml 의 params.profileMode.subtitle 값을 그대로 가져옵니다 -->
+  <div class="sidebar-subtitle">{{ .Site.Params.profileMode.subtitle }}</div>
+
+  <!-- 이메일: 아래 mailto 주소만 본인 것으로 바꿔주세요 -->
+  <div class="sidebar-email">
+    ✉️ <a href="mailto:your-email@example.com">your-email@example.com</a>
+  </div>
+
+  <!-- 목차: 글(post) 페이지에서만, 그 글의 소제목 기준으로 표시됩니다 -->
+  {{ if and .IsPage .TableOfContents (ne .TableOfContents "<nav id=\"TableOfContents\"></nav>") }}
+  <div class="sidebar-toc">
+    <div class="sidebar-toc-title">On this page</div>
+    {{ .TableOfContents }}
+  </div>
+  {{ end }}
+
+</aside>

@@ -1,0 +1,254 @@
+<div class="usagi-hero">
+  <div class="usagi-avatar-wrap">
+    {{ with site.Params.author.image }}
+      {{ $authorImage := resources.Get . }}
+      {{ if $authorImage }}
+        {{ partial "picture.html" (dict "img" $authorImage "alt" (site.Params.author.name | default site.Title) "class" "mb-2 h-auto w-36 rounded-full" "lazy" true "webp" true) }}
+      {{ end }}
+    {{ end }}
+    {{ with .Site.Params.statusMessages }}
+    <div class="usagi-bubble">
+      <svg class="usagi-bubble-svg" viewBox="0 0 140 60" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="usagiBubbleGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#f472b6" />
+            <stop offset="100%" stop-color="#8b5cf6" />
+          </linearGradient>
+        </defs>
+        <rect x="4" y="4" width="132" height="34" rx="14" fill="url(#usagiBubbleGrad)" />
+        <polygon points="26,36 46,36 20,56" fill="url(#usagiBubbleGrad)" />
+      </svg>
+      <div class="usagi-bubble-body">
+        <span id="usagi-status-text"></span><span class="usagi-status-cursor">|</span>
+      </div>
+      <div class="usagi-bubble-tail-spacer"></div>
+    </div>
+    <script>window.usagiStatusMessages = {{ . | jsonify | safeJS }};</script>
+    {{ end }}
+  </div>
+  <h1 class="text-4xl font-extrabold">{{ site.Params.author.name | default site.Title }}</h1>
+  {{ with site.Params.author.headline }}
+  <h2 class="text-xl text-neutral-500 dark:text-neutral-400">{{ . | markdownify | emojify }}</h2>
+  {{ end }}
+</div>
+
+<div class="home-main">
+
+  <section class="home-section reveal">
+    <h2 class="home-section-title">🛠️ 기술 스택</h2>
+    <img class="tech-icons" src="https://skillicons.dev/icons?i=cpp,c,python,git" alt="tech stack icons" loading="lazy" />
+  </section>
+
+  <section class="home-section reveal">
+    <h2 class="home-section-title">🌱 GitHub 잔디</h2>
+    <div id="usagi-heatmap" class="garden" data-user="kawaiiusagi">
+      <div class="heatmap-loading">정원을 가꾸는 중...</div>
+    </div>
+  </section>
+
+  {{ with .Site.Taxonomies.categories }}
+  <section class="home-section reveal">
+    <h2 class="home-section-title">🗂️ 분류</h2>
+    <div class="category-chip-list">
+      {{ range $name, $items := . }}
+      <a class="category-chip" href="{{ "categories/" | relLangURL }}{{ $name | urlize }}/">
+        {{ $name }} <span class="category-chip-count">{{ len $items }}</span>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+  {{ $posts := where site.RegularPages "Section" "posts" }}
+  {{ with $posts }}
+  <section class="home-section reveal">
+    <h2 class="home-section-title">📝 최근 글</h2>
+    <div class="card-grid">
+      {{ range first 6 (sort . "Date" "desc") }}
+      <a class="content-card" href="{{ .Permalink }}">
+        <div class="content-card-body">
+          <div class="content-card-title">{{ .Title }}</div>
+          <div class="content-card-date">{{ .Date.Format "2006-01-02" }}</div>
+          <div class="content-card-summary">{{ .Summary | plainify | truncate 80 }}</div>
+          {{ with .Params.categories }}
+          <div class="content-card-tags">
+            {{ range . }}<span class="tag-pill">{{ . }}</span>{{ end }}
+          </div>
+          {{ end }}
+        </div>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+  {{ $projects := where site.RegularPages "Section" "projects" }}
+  {{ with $projects }}
+  <section class="home-section reveal">
+    <h2 class="home-section-title">🚀 프로젝트</h2>
+    <div class="card-grid">
+      {{ range first 4 (sort . "Date" "desc") }}
+      <a class="content-card" href="{{ with .Params.link }}{{ . }}{{ else }}{{ $.Permalink }}{{ end }}"
+        {{ if .Params.link }}target="_blank" rel="noopener"{{ end }}>
+        <div class="content-card-body">
+          <div class="content-card-title">{{ .Title }}</div>
+          <div class="content-card-summary">{{ .Summary | plainify | truncate 80 }}</div>
+          {{ with .Params.tags }}
+          <div class="content-card-tags">
+            {{ range . }}<span class="tag-pill">{{ . }}</span>{{ end }}
+          </div>
+          {{ end }}
+        </div>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+  {{ end }}
+
+</div>
+
+<script>
+(function () {
+  // 스크롤하면 섹션이 서서히 나타나는 효과
+  var sections = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    sections.forEach(function (el) { observer.observe(el); });
+  } else {
+    sections.forEach(function (el) { el.classList.add('is-visible'); });
+  }
+
+  // 상태 위젯: 타이핑 애니메이션
+  var statusEl = document.getElementById('usagi-status-text');
+  var messages = window.usagiStatusMessages || [];
+  if (statusEl) {
+    if (messages.length) {
+      var msgIndex = 0;
+      var charIndex = 0;
+      var deleting = false;
+
+      function tick() {
+        // 이모지(서로게이트 쌍)가 잘리지 않도록 코드 포인트 단위로 분리
+        var current = Array.from(messages[msgIndex]);
+        if (!deleting) {
+          charIndex++;
+          statusEl.textContent = current.slice(0, charIndex).join('');
+          if (charIndex === current.length) {
+            deleting = true;
+            setTimeout(tick, 1600);
+            return;
+          }
+          setTimeout(tick, 90);
+        } else {
+          charIndex--;
+          statusEl.textContent = current.slice(0, charIndex).join('');
+          if (charIndex === 0) {
+            deleting = false;
+            msgIndex = (msgIndex + 1) % messages.length;
+            setTimeout(tick, 300);
+            return;
+          }
+          setTimeout(tick, 40);
+        }
+      }
+      tick();
+    }
+  }
+
+  // GitHub 잔디 커스텀 히트맵
+  var container = document.getElementById('usagi-heatmap');
+  if (!container) return;
+  var user = container.getAttribute('data-user');
+
+  fetch('https://github-contributions-api.jogruber.de/v4/' + encodeURIComponent(user) + '?y=last')
+    .then(function (res) {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      if (data.error) throw new Error(data.error);
+      renderHeatmap(container, data.contributions || []);
+    })
+    .catch(function (err) {
+      console.error('[usagi-heatmap]', err);
+      container.textContent = '잔디 정보를 불러오지 못했어요 🥲 (' + err.message + ')';
+    });
+
+  // 달력 그리드 대신, 한 주씩 자라는 '꽃밭'으로 표현
+  function renderHeatmap(root, days) {
+    root.textContent = '';
+    if (!days.length) {
+      root.textContent = '표시할 활동이 없어요.';
+      return;
+    }
+
+    // 7일씩 묶어서 주 단위로 집계
+    var weeks = [];
+    for (var i = 0; i < days.length; i += 7) {
+      weeks.push(days.slice(i, i + 7));
+    }
+
+    var weekStats = weeks.map(function (week) {
+      var total = week.reduce(function (sum, d) { return sum + d.count; }, 0);
+      var maxLevel = week.reduce(function (m, d) { return Math.max(m, d.level || 0); }, 0);
+      return { total: total, maxLevel: maxLevel, start: week[0].date, end: week[week.length - 1].date };
+    });
+
+    var maxTotal = weekStats.reduce(function (m, w) { return Math.max(m, w.total); }, 0) || 1;
+
+    var bed = document.createElement('div');
+    bed.className = 'garden-bed';
+
+    var tooltip = document.createElement('div');
+    tooltip.className = 'heatmap-tooltip';
+    tooltip.hidden = true;
+
+    weekStats.forEach(function (week) {
+      var stem = document.createElement('div');
+      stem.className = 'garden-stem-wrap';
+
+      var flower = document.createElement('div');
+      flower.className = 'garden-flower';
+      flower.setAttribute('data-level', week.maxLevel);
+
+      var stalk = document.createElement('div');
+      stalk.className = 'garden-stalk';
+      var height = 6 + Math.round((week.total / maxTotal) * 40);
+      stalk.style.height = height + 'px';
+
+      stem.appendChild(flower);
+      stem.appendChild(stalk);
+
+      stem.addEventListener('mouseenter', function () {
+        tooltip.textContent = week.start + ' ~ ' + week.end + ' · ' + week.total + '회';
+        tooltip.hidden = false;
+      });
+      stem.addEventListener('mousemove', function (e) {
+        var rect = root.getBoundingClientRect();
+        tooltip.style.left = (e.clientX - rect.left + 12) + 'px';
+        tooltip.style.top = (e.clientY - rect.top - 28) + 'px';
+      });
+      stem.addEventListener('mouseleave', function () {
+        tooltip.hidden = true;
+      });
+
+      bed.appendChild(stem);
+    });
+
+    var ground = document.createElement('div');
+    ground.className = 'garden-ground';
+
+    root.style.position = 'relative';
+    root.appendChild(bed);
+    root.appendChild(ground);
+    root.appendChild(tooltip);
+  }
+})();
+</script>

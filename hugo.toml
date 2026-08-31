@@ -1,0 +1,79 @@
+baseURL = 'https://kawaiiusagi.github.io'
+languageCode = 'ko-kr'
+defaultContentLanguage = 'ko'
+title = "Usagi's LAB"
+theme = 'congo'
+
+enableRobotsTXT = true
+summaryLength = 0
+
+[pagination]
+  pagerSize = 15
+
+[outputs]
+  home = ["HTML", "RSS", "JSON"]
+
+[params]
+  colorScheme = "usagi"
+  defaultAppearance = "light"
+  autoSwitchAppearance = true
+
+  enableSearch = true
+  enableCodeCopy = true
+
+  dateFormat = "2006년 1월 2일"
+  description = "개발하고 배운 것들을 기록하는 공간입니다."
+  mainSections = ["posts"]
+  statusMessages = [
+    "🔭 알고리즘 스터디 중",
+    "📝 새 글을 준비하는 중",
+    "사이트 꾸미는 중",
+  ]
+
+  [params.author]
+    name = "Usagi's LAB"
+    image = "img/profile.png"
+    headline = "🐰 개발하고 배운 것들을 기록하는 공간입니다."
+    bio = ""
+    links = []
+
+  [params.header]
+    layout = "basic"
+    showTitle = true
+
+  [params.footer]
+    showCopyright = true
+    showThemeAttribution = true
+    showAppearanceSwitcher = true
+    showScrollToTop = true
+
+  [params.homepage]
+    layout = "custom"
+    showRecent = false
+    recentLimit = 6
+
+  [params.article]
+    showDate = true
+    showAuthor = true
+    showBreadcrumbs = true
+    showHeadingAnchors = true
+    showPagination = true
+    showReadingTime = true
+    showTableOfContents = true
+    showTaxonomies = false
+
+  [params.list]
+    showBreadcrumbs = true
+    showSummary = true
+    showTableOfContents = true
+    groupByYear = false
+
+[[menu.main]]
+  name = "글 목록"
+  pageRef = "posts"
+  weight = 10
+
+[[menu.main]]
+  name = "프로젝트"
+  pageRef = "projects"
+  weight = 20

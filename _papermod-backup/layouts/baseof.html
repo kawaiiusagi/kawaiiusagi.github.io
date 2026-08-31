@@ -1,0 +1,34 @@
+<!--
+  이 파일은 layouts/_default/baseof.html 에 저장하세요.
+  PaperMod 원본 baseof.html을 기반으로, sidebar를 추가하고 body에 has-sidebar 클래스를 넣은 버전입니다.
+  나중에 PaperMod가 업데이트되면 원본과 다시 비교해보는 게 좋아요.
+-->
+<!DOCTYPE html>
+<html lang="{{ site.Language }}" dir="{{ .Language.LanguageDirection | default "auto" }}">
+
+<head>
+  {{ partial "head.html" . }}
+</head>
+
+<body class="has-sidebar {{ if (or site.Params.disableThemeToggle site.Params.ShowLastMod) }}
+    {{ end }}"
+  id="top">
+  {{ partial "sidebar.html" . }}
+
+  {{ partial "header.html" . }}
+  <main class="main">
+    {{ block "main" . }}{{ end }}
+  </main>
+  {{ partial "footer.html" . }}
+
+  {{ if (not site.Params.disableThemeToggle) }}
+  <script>
+    if (typeof (Storage) !== "undefined") {
+      var theme = localStorage.getItem("pref-theme");
+      if (theme === "dark") document.body.classList.add('dark');
+    }
+  </script>
+  {{ end }}
+</body>
+
+</html>

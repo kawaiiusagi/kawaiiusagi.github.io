@@ -1,0 +1,33 @@
+{{ define "main" }}
+<div class="home-main">
+
+  <section class="home-section">
+  <h2 class="home-section-title">GitHub Stats</h2>
+  <img src="https://github-readme-streak-stats.herokuapp.com/?user=kawaiiusagi&theme=dark&hide_border=true&background=00000000" alt="github streak" style="max-width:100%;" />
+</section>
+
+  <section class="home-section">
+    <h2 class="home-section-title">Tech Stack</h2>
+    <img class="skill-icons" src="https://skillicons.dev/icons?i=cpp,c,python,git" alt="tech stack icons" />
+  </section>
+
+  <section class="home-section">
+    <h2 class="home-section-title">최근 글</h2>
+    <div class="post-card-grid">
+      {{ range first 6 .Site.RegularPages }}
+      <a class="post-card" href="{{ .Permalink }}">
+        {{ if .Params.cover.image }}
+        <div class="post-card-image" style="background-image: url('{{ .Params.cover.image | absURL }}');"></div>
+        {{ end }}
+        <div class="post-card-body">
+          <div class="post-card-title">{{ .Title }}</div>
+          <div class="post-card-date">{{ .Date.Format "2006-01-02" }}</div>
+          <div class="post-card-summary">{{ .Summary | plainify | truncate 80 }}</div>
+        </div>
+      </a>
+      {{ end }}
+    </div>
+  </section>
+
+</div>
+{{ end }}

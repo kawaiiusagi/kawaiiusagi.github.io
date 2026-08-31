@@ -1,0 +1,209 @@
+/* ============================================
+   왼쪽 고정 사이드바: 프로필 + 이메일 + 목차
+   ============================================ */
+
+@media screen and (min-width: 1024px) {
+
+  /* 사이드바 컨테이너 (프로필 영역을 감싸는 wrapper) */
+  /* position: fixed 를 빼서 스크롤하면 자연스럽게 같이 움직입니다 (화면에 고정되지 않음) */
+  .sidebar-fixed {
+    float: left;
+    width: 260px;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+
+  /* 프로필 사진 */
+  .sidebar-fixed .sidebar-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  /* 이름/타이틀 */
+  .sidebar-fixed .sidebar-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  /* 소개 문구 */
+  .sidebar-fixed .sidebar-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.75;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  /* 이메일 영역 */
+  .sidebar-fixed .sidebar-email {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+
+  .sidebar-fixed .sidebar-email a {
+    color: var(--secondary);
+    text-decoration: none;
+    word-break: break-all;
+  }
+
+  .sidebar-fixed .sidebar-email a:hover {
+    color: var(--primary);
+  }
+
+  /* 목차(TOC) 영역 */
+  .sidebar-fixed .sidebar-toc {
+    font-size: 0.85rem;
+  }
+
+  .sidebar-fixed .sidebar-toc-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    opacity: 0.6;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+  }
+
+  .sidebar-fixed .sidebar-toc nav ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+
+  .sidebar-fixed .sidebar-toc nav ul ul {
+    padding-left: 14px;
+  }
+
+  .sidebar-fixed .sidebar-toc nav li {
+    margin-bottom: 6px;
+  }
+
+  .sidebar-fixed .sidebar-toc nav a {
+    color: var(--content);
+    text-decoration: none;
+    opacity: 0.7;
+  }
+
+  .sidebar-fixed .sidebar-toc nav a:hover {
+    opacity: 1;
+    color: var(--primary);
+  }
+
+  /* 메인 콘텐츠 영역을 사이드바 옆에 배치 (float 옆으로 흐르게) */
+  body.has-sidebar header,
+  body.has-sidebar .main,
+  body.has-sidebar footer {
+    margin-left: 300px !important;
+    max-width: calc(min(var(--main-width), 100% - 300px)) !important;
+  }
+}
+
+/* ============================================
+   메인 화면: GitHub 잔디 / 기술스택 / 최근글 카드
+   ============================================ */
+
+.home-main {
+  padding: 20px 0;
+}
+
+.home-section {
+  margin-bottom: 48px;
+}
+
+.home-section-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  opacity: 0.85;
+}
+
+.github-chart {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.github-chart-wrapper {
+  display: inline-block;
+  background: #ffffff;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.skill-icons {
+  max-width: 100%;
+}
+
+.post-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.post-card {
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--content);
+  background: var(--entry);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.post-card-image {
+  height: 130px;
+  background-size: cover;
+  background-position: center;
+}
+
+.post-card-body {
+  padding: 14px 16px;
+}
+
+.post-card-title {
+  font-weight: 600;
+  font-size: 1rem;
+  margin-bottom: 6px;
+}
+
+.post-card-date {
+  font-size: 0.75rem;
+  opacity: 0.55;
+  margin-bottom: 8px;
+}
+
+.post-card-summary {
+  font-size: 0.85rem;
+  opacity: 0.75;
+  line-height: 1.4;
+}
+
+/* 모바일에서는 사이드바를 일반 흐름으로 (숨기지 않고 상단에 그대로 표시) */
+@media screen and (max-width: 1023px) {
+  .sidebar-fixed {
+    position: static;
+    width: 100%;
+    padding: 20px 0;
+    text-align: center;
+  }
+
+  .sidebar-fixed .sidebar-avatar {
+    margin: 0 auto 16px;
+  }
+}
