@@ -51,8 +51,9 @@
     <h2 class="home-section-title">🗂️ 분류</h2>
     <div class="category-chip-list">
       {{ range $name, $items := . }}
+      {{ $termPage := $.Site.GetPage (printf "/categories/%s" $name) }}
       <a class="category-chip" href="{{ "categories/" | relLangURL }}{{ $name | urlize }}/">
-        {{ $name }} <span class="category-chip-count">{{ len $items }}</span>
+        {{ if $termPage }}{{ $termPage.Title }}{{ else }}{{ $name }}{{ end }} <span class="category-chip-count">{{ len $items }}</span>
       </a>
       {{ end }}
     </div>
