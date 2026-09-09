@@ -340,3 +340,45 @@ html.dark .content-card:hover {
 html.dark .tag-pill {
   background: rgba(255, 255, 255, 0.08);
 }
+
+/* ============================================
+   글 상세: 본문 폭 + 목차(TOC) 위치/배경
+   (Tailwind 유틸리티가 이 프로젝트의 layouts/single.html까지
+   재컴파일되지 않으므로, 레이아웃 값은 순수 CSS로 직접 지정한다.)
+   ============================================ */
+
+@media (min-width: 1024px) {
+  .article-body-section {
+    max-width: calc(100% + 8rem);
+    margin-left: -4rem;
+    margin-right: -4rem;
+  }
+
+  .article-toc-col {
+    max-width: 260px;
+    margin-left: 5rem;
+  }
+
+  .toc > details > div {
+    background-color: rgba(var(--color-secondary-100), 0.5);
+    border: 1px solid rgba(var(--color-secondary-300), 0.3);
+    box-shadow: 0 2px 8px rgba(var(--color-secondary-900), 0.06);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+  }
+
+  .toc > details > div a {
+    color: rgb(var(--color-secondary-700));
+    font-weight: 500;
+  }
+}
+
+html.dark .toc > details > div {
+  background-color: rgba(var(--color-secondary-900), 0.3);
+  border-color: rgba(var(--color-secondary-500), 0.2);
+}
+
+html.dark .toc > details > div a {
+  color: rgb(var(--color-secondary-100));
+}
