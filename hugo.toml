@@ -33,7 +33,7 @@ summaryLength = 0
   [params.author]
     name = "Usagi's LAB"
     image = "img/profile.png"
-    headline = "🐰 개발하고 배운 것들을 기록하는 공간입니다."
+    headline = "개발하고 배운 것들을 기록하는 공간입니다."
     bio = ""
     links = []
 
