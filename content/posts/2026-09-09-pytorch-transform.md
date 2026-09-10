@@ -188,3 +188,4 @@ for i, (batch_features, batch_labels) in enumerate(dataloader):
 ```
 
 ---
+*다음 편: 4편 Neural Network에서 이어집니다.*
