@@ -40,6 +40,15 @@
         <div class="order-first px-0 lg:order-last article-toc-col">
           <div class="toc pe-5 lg:sticky lg:top-10 print:hidden">
             {{ partial "toc.html" . }}
+            <script>
+              (function () {
+                document.querySelectorAll('#TableOfContents a').forEach(function (a) {
+                  var len = a.textContent.trim().length;
+                  var w = Math.min(56, Math.max(14, len * 2));
+                  a.style.setProperty('--bar-w', w + 'px');
+                });
+              })();
+            </script>
           </div>
         </div>
       {{ end }}
