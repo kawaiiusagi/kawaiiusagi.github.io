@@ -58,6 +58,7 @@ summaryLength = 0
     showBreadcrumbs = true
     showHeadingAnchors = true
     showPagination = true
+    invertPagination = true
     showReadingTime = false
     showTableOfContents = true
     showTaxonomies = false
