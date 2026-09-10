@@ -424,3 +424,88 @@ html.dark .toc:hover > details > div a,
 html.dark .toc:focus-within > details > div a {
   color: rgb(var(--color-secondary-100));
 }
+
+/* ============================================
+   글 목록: 카테고리 인터랙티브 그래프 (/posts/ 전용)
+   ============================================ */
+
+.post-graph {
+  height: 480px;
+  margin: 1rem 0 2rem;
+  border-radius: 0.75rem;
+  background: rgba(var(--color-neutral-100), 0.6);
+  border: 1px solid rgba(var(--color-neutral-300), 0.4);
+  overflow: hidden;
+}
+
+html.dark .post-graph {
+  background: rgba(var(--color-neutral-900), 0.4);
+  border-color: rgba(var(--color-neutral-700), 0.5);
+}
+
+.post-graph-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.graph-edge {
+  stroke: rgba(var(--color-neutral-400), 0.5);
+  stroke-width: 1;
+  transition: opacity 0.15s ease;
+}
+
+html.dark .graph-edge {
+  stroke: rgba(var(--color-neutral-500), 0.4);
+}
+
+.graph-node {
+  transition: opacity 0.15s ease;
+}
+
+.graph-node-inner {
+  transform-origin: 0 0;
+  transition: transform 0.15s ease;
+}
+
+.graph-node-category circle {
+  fill: rgba(var(--color-secondary-500), 0.85);
+  stroke: rgba(var(--color-secondary-700), 0.5);
+  stroke-width: 1.5;
+}
+
+html.dark .graph-node-category circle {
+  fill: rgba(var(--color-secondary-400), 0.85);
+  stroke: rgba(var(--color-secondary-200), 0.4);
+}
+
+.graph-node-post circle {
+  fill: rgba(var(--color-primary-400), 0.9);
+  stroke: rgba(var(--color-primary-600), 0.4);
+  stroke-width: 1;
+}
+
+html.dark .graph-node-post circle {
+  fill: rgba(var(--color-primary-300), 0.9);
+  stroke: rgba(var(--color-primary-100), 0.3);
+}
+
+.graph-node-label {
+  font-size: 10px;
+  fill: rgb(var(--color-neutral-700));
+  pointer-events: none;
+  user-select: none;
+}
+
+html.dark .graph-node-label {
+  fill: rgb(var(--color-neutral-300));
+}
+
+.graph-node-category .graph-node-label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.is-dimmed {
+  opacity: 0.15;
+}

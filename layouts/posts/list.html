@@ -1,0 +1,313 @@
+{{/* Project override — /posts/ only. Renders an interactive category/post graph instead of a flat list. */}}
+{{ define "main" }}
+  <header>
+    {{ if .Params.showBreadcrumbs | default (.Site.Params.list.showBreadcrumbs | default false) }}
+      {{ partial "breadcrumbs.html" . }}
+    {{ end }}
+    <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">{{ .Title }}</h1>
+  </header>
+
+  {{ if .Pages }}
+    <div id="post-graph" class="post-graph" role="img" aria-label="카테고리별 글 관계 그래프"></div>
+
+    {{ $posts := slice }}
+    {{ range .Pages }}
+      {{ $cats := .Params.categories }}
+      {{ $catData := slice }}
+      {{ if $cats }}
+        {{ range $cats }}
+          {{ $catData = $catData | append (dict "name" . "slug" (. | urlize) "uncategorized" false) }}
+        {{ end }}
+      {{ else }}
+        {{ $catData = $catData | append (dict "name" "미분류" "slug" "uncategorized" "uncategorized" true) }}
+      {{ end }}
+      {{ $posts = $posts | append (dict "title" .Title "url" .RelPermalink "categories" $catData) }}
+    {{ end }}
+    <script type="application/json" id="post-graph-data">{{ (dict "posts" $posts) | jsonify | safeJS }}</script>
+    <script>
+      (function () {
+        var dataEl = document.getElementById('post-graph-data');
+        var container = document.getElementById('post-graph');
+        if (!dataEl || !container) return;
+        var data = JSON.parse(dataEl.textContent);
+        if (!data.posts || !data.posts.length) return;
+
+        var width = container.clientWidth || 600;
+        var height = 480;
+        var cx = width / 2;
+        var cy = height / 2;
+
+        var nodesMap = {};
+        var nodes = [];
+        var edges = [];
+
+        data.posts.forEach(function (post, i) {
+          var postId = 'post:' + i;
+          var postNode = { id: postId, type: 'post', label: post.title, url: post.url, r: 6 };
+          nodes.push(postNode);
+          nodesMap[postId] = postNode;
+
+          (post.categories || []).forEach(function (cat) {
+            var catId = 'cat:' + cat.slug;
+            if (!nodesMap[catId]) {
+              var catNode = {
+                id: catId,
+                type: 'category',
+                label: cat.name,
+                url: cat.uncategorized ? null : '/categories/' + cat.slug + '/',
+                r: 14,
+                count: 0
+              };
+              nodesMap[catId] = catNode;
+              nodes.push(catNode);
+            }
+            nodesMap[catId].count++;
+            edges.push({ source: postId, target: catId });
+          });
+        });
+
+        nodes.forEach(function (n) {
+          if (n.type === 'category') {
+            n.r = 8 + Math.min(3, n.count * 0.4);
+          }
+        });
+
+        nodes.forEach(function (n, i) {
+          var angle = (i / nodes.length) * Math.PI * 2;
+          var rad = Math.min(width, height) * 0.3;
+          n.x = cx + Math.cos(angle) * rad + (Math.random() - 0.5) * 20;
+          n.y = cy + Math.sin(angle) * rad + (Math.random() - 0.5) * 20;
+          n.vx = 0;
+          n.vy = 0;
+          n.fixed = false;
+        });
+
+        var svgNS = 'http://www.w3.org/2000/svg';
+        var svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
+        svg.setAttribute('class', 'post-graph-svg');
+        svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        container.appendChild(svg);
+
+        var edgeEls = edges.map(function () {
+          var line = document.createElementNS(svgNS, 'line');
+          line.setAttribute('class', 'graph-edge');
+          svg.appendChild(line);
+          return line;
+        });
+
+        var nodeGroups = nodes.map(function (n) {
+          var g = document.createElementNS(svgNS, 'g');
+          g.setAttribute(
+            'class',
+            'graph-node ' + (n.type === 'category' ? 'graph-node-category' : 'graph-node-post')
+          );
+          g.style.cursor = n.url ? 'pointer' : 'grab';
+          g.style.touchAction = 'none';
+
+          var inner = document.createElementNS(svgNS, 'g');
+          inner.setAttribute('class', 'graph-node-inner');
+          g.appendChild(inner);
+
+          var circle = document.createElementNS(svgNS, 'circle');
+          circle.setAttribute('r', n.r);
+          inner.appendChild(circle);
+
+          var title = document.createElementNS(svgNS, 'title');
+          title.textContent = n.label;
+          inner.appendChild(title);
+
+          var text = document.createElementNS(svgNS, 'text');
+          text.setAttribute('class', 'graph-node-label');
+          text.setAttribute('text-anchor', 'middle');
+          text.textContent = n.label.length > 14 ? n.label.slice(0, 13) + '…' : n.label;
+          inner.appendChild(text);
+
+          svg.appendChild(g);
+          return g;
+        });
+
+        function render() {
+          edges.forEach(function (e, i) {
+            var s = nodesMap[e.source];
+            var t = nodesMap[e.target];
+            var el = edgeEls[i];
+            el.setAttribute('x1', s.x);
+            el.setAttribute('y1', s.y);
+            el.setAttribute('x2', t.x);
+            el.setAttribute('y2', t.y);
+          });
+          nodes.forEach(function (n, i) {
+            var g = nodeGroups[i];
+            g.setAttribute('transform', 'translate(' + n.x + ',' + n.y + ')');
+            var text = g.querySelector('.graph-node-label');
+            text.setAttribute('y', n.r + 12);
+          });
+        }
+
+        function tick() {
+          for (var i = 0; i < nodes.length; i++) {
+            for (var j = i + 1; j < nodes.length; j++) {
+              var a = nodes[i];
+              var b = nodes[j];
+              var dx = b.x - a.x;
+              var dy = b.y - a.y;
+              var distSq = dx * dx + dy * dy || 0.01;
+              var dist = Math.sqrt(distSq);
+              var force = Math.min(600 / distSq, 6);
+              var fx = (dx / dist) * force;
+              var fy = (dy / dist) * force;
+              if (!a.fixed) {
+                a.vx -= fx;
+                a.vy -= fy;
+              }
+              if (!b.fixed) {
+                b.vx += fx;
+                b.vy += fy;
+              }
+            }
+          }
+          edges.forEach(function (e) {
+            var s = nodesMap[e.source];
+            var t = nodesMap[e.target];
+            var dx = t.x - s.x;
+            var dy = t.y - s.y;
+            var dist = Math.sqrt(dx * dx + dy * dy) || 0.01;
+            var target = s.r + t.r + 46;
+            var force = (dist - target) * 0.02;
+            var fx = (dx / dist) * force;
+            var fy = (dy / dist) * force;
+            if (!s.fixed) {
+              s.vx += fx;
+              s.vy += fy;
+            }
+            if (!t.fixed) {
+              t.vx -= fx;
+              t.vy -= fy;
+            }
+          });
+          nodes.forEach(function (n) {
+            if (n.fixed) return;
+            n.vx += (cx - n.x) * 0.002;
+            n.vy += (cy - n.y) * 0.002;
+          });
+          nodes.forEach(function (n) {
+            if (n.fixed) return;
+            n.vx *= 0.82;
+            n.vy *= 0.82;
+            n.x += n.vx;
+            n.y += n.vy;
+            n.x = Math.max(n.r + 4, Math.min(width - n.r - 4, n.x));
+            n.y = Math.max(n.r + 4, Math.min(height - n.r - 4, n.y));
+          });
+        }
+
+        var frame = 0;
+        var maxFrames = 260;
+        var rafId = null;
+        function loop() {
+          tick();
+          render();
+          frame++;
+          if (frame < maxFrames) {
+            rafId = requestAnimationFrame(loop);
+          } else {
+            rafId = null;
+          }
+        }
+        rafId = requestAnimationFrame(loop);
+
+        function reheat(extraFrames) {
+          frame = Math.max(0, maxFrames - extraFrames);
+          if (!rafId) rafId = requestAnimationFrame(loop);
+        }
+
+        function toSvgPoint(clientX, clientY) {
+          var rect = svg.getBoundingClientRect();
+          var scaleX = width / rect.width;
+          var scaleY = height / rect.height;
+          return {
+            x: (clientX - rect.left) * scaleX,
+            y: (clientY - rect.top) * scaleY
+          };
+        }
+
+        function setActiveScale(g, active) {
+          var inner = g.querySelector('.graph-node-inner');
+          inner.setAttribute('transform', active ? 'scale(1.3)' : 'scale(1)');
+        }
+
+        function highlight(n) {
+          var connected = {};
+          connected[n.id] = true;
+          edges.forEach(function (e) {
+            if (e.source === n.id) connected[e.target] = true;
+            if (e.target === n.id) connected[e.source] = true;
+          });
+          nodeGroups.forEach(function (g, i) {
+            g.classList.toggle('is-dimmed', !connected[nodes[i].id]);
+            setActiveScale(g, nodes[i].id === n.id);
+          });
+          edgeEls.forEach(function (el, i) {
+            var e = edges[i];
+            var active = e.source === n.id || e.target === n.id;
+            el.classList.toggle('is-dimmed', !active);
+          });
+        }
+        function clearHighlight() {
+          nodeGroups.forEach(function (g) {
+            g.classList.remove('is-dimmed');
+            setActiveScale(g, false);
+          });
+          edgeEls.forEach(function (el) {
+            el.classList.remove('is-dimmed');
+          });
+        }
+
+        nodeGroups.forEach(function (g, i) {
+          var n = nodes[i];
+          var dragging = false;
+          var moved = false;
+
+          g.addEventListener('pointerdown', function (ev) {
+            dragging = true;
+            moved = false;
+            n.fixed = true;
+            g.setPointerCapture(ev.pointerId);
+            highlight(n);
+          });
+          g.addEventListener('pointermove', function (ev) {
+            if (!dragging) return;
+            moved = true;
+            var p = toSvgPoint(ev.clientX, ev.clientY);
+            n.x = p.x;
+            n.y = p.y;
+            n.vx = 0;
+            n.vy = 0;
+            render();
+            reheat(60);
+          });
+          g.addEventListener('pointerup', function (ev) {
+            dragging = false;
+            g.releasePointerCapture(ev.pointerId);
+            if (!moved && n.url) {
+              window.location.href = n.url;
+            }
+          });
+          g.addEventListener('pointerenter', function () {
+            if (!dragging) highlight(n);
+          });
+          g.addEventListener('pointerleave', function () {
+            if (!dragging) clearHighlight();
+          });
+        });
+      })();
+    </script>
+  {{ else }}
+    <section class="prose mt-10 dark:prose-invert">
+      <p class="border-t py-8">
+        <em>{{ i18n "list.no_articles" | emojify }}</em>
+      </p>
+    </section>
+  {{ end }}
+{{ end }}
