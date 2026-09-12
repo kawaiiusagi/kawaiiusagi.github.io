@@ -289,3 +289,4 @@ print(f"\nCall after zeroing gradients\n{inp.grad}")
 > **참고**: 지금까지는 매개변수 없이 `backward()`를 호출했는데, 이는 본질적으로 `backward(torch.tensor(1.0))`을 호출하는 것과 같다. 손실처럼 스칼라 값 함수의 변화도를 계산할 때 유용한 방법중 하나이다.
 
 ---
+*다음 편: 6편 Optimization에서 이어집니다.*

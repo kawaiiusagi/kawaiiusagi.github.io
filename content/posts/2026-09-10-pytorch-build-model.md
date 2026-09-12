@@ -308,3 +308,4 @@ print(flat_image.size())  # torch.Size([3, 784])
 ```
 
 ---
+*다음 편: 5편 Autograd에서 이어집니다.*
