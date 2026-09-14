@@ -13,7 +13,7 @@ categories: ["Survey_Notes"]
 
 ## 한 줄 요약
 
-> Motion Planning의 핵심 두 문제(Path Planning, Trajectory Planning)를 수학적으로 formal하게 정의하고, **두 문제 모두 계산적으로 극도로 어렵다는 것(PSPACE-hard, NP-hard)**을 보인 뒤, 그래서 정확한 해 대신 근사적 수치해법 3가지 계열이 쓰인다는 것을 소개하는 파트.
+> Motion Planning의 핵심 두 문제(Path Planning, Trajectory Planning)를 수학적으로 formal하게 정의하고, **두 문제 모두 계산적으로 극도로 어렵다는 것(PSPACE-hard, NP-hard)** 을 보인 뒤, 그래서 정확한 해 대신 근사적 수치해법 3가지 계열이 쓰인다는 것을 소개하는 파트.
 
 ## 핵심 개념 정리
 
