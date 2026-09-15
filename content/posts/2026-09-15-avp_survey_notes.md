@@ -33,7 +33,7 @@ categories: ["Survey_Notes"]
 | LiDAR | 조명/날씨와 무관하게 정확한 거리·위치 측정, 초당 수천 개 펄스로 360도 포인트클라우드 생성 | 색상 인식 불가, 신호등 색/표지판 글자 인식 불가 → 단독 사용 불가, 항상 Camera와 결합 |
 | Radar | 눈·안개·비 등 악천후에서 카메라·LiDAR보다 강함 | 정확도 낮음, 상세 정보 부족 → 좁은 용도로만 사용, Camera/LiDAR와 결합 |
 
-→ 이 표가 결국 **멀티센서 퓨전(Multi-sensor Fusion)**이 필요한 이유가 된다. 각 센서의 단점을 다른 센서로 보완하기 위해 여러 센서 데이터를 결합해서 사용한다고 한다.
+→ 이 표가 결국 **멀티센서 퓨전(Multi-sensor Fusion)** 이 필요한 이유가 된다. 각 센서의 단점을 다른 센서로 보완하기 위해 여러 센서 데이터를 결합해서 사용한다고 한다.
 
 ### Spatial Feature vs Semantic Feature — 처음에 헷갈렸던 부분
 
@@ -43,13 +43,15 @@ categories: ["Survey_Notes"]
 
 → **Semantic Segmentation**이라는 이름 자체가 "픽셀에 의미(semantic)를 부여하는 분할(segmentation) 작업"이라는 뜻으로, 이 두 feature 개념이 챕터 제목과 직접 연결된다는 걸 이해하고 나니 훨씬 명확해졌다.
 
-### Semantic Segmentation (의미론적 분할)
+### 원문으로 다시 살펴보자.
+
+#### Semantic Segmentation (의미론적 분할)
 
 > "the process of assigning each pixel in an image to a particular class"
 
 이미지의 **각 픽셀**에 클래스(사람, 자전거, 나무 등)를 할당하는 작업. 픽셀 단위 이미지 분류(image classification at a pixel level)로 볼 수 있다. 같은 클래스의 픽셀들은 같은 색으로 칠해짐 (차량=빨강, 식물=초록, 건물=회색 등).
 
-### Object Detection과 Bounding Box
+#### Object Detection과 Bounding Box
 
 > "the task of identifying and locating an object of interest in an image and drawing a **bounding box** around that object"
 
