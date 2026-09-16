@@ -100,5 +100,21 @@ flowchart TD
 
 → B절은 "향상을 완전히 끝낸 이미지 한 장"을 만들고 그걸 탐지기에 통째로 넣는 **순차적** 구조인 반면, C절은 완성 이미지를 만드는 과정 자체를 생략하고 **중간 특징(feature)** 단계에서 두 네트워크가 정보를 바로 섞어버리는 구조라는 게 핵심 차이였다.
 
+## VIII절 — Challenges & Future Directions 요약
+
+### 기존 4가지 난제
+1. **데이터 부족(Lack of Data With Annotations)**: 지도학습(SL) 패러다임이 지배적인데 정작 라벨 있는 저조도 데이터가 부족함
+2. **Target Inconsistency**: 화질 개선(사람 눈 기준)과 인식 정확도(기계 기준)의 목표가 달라서 통합 프레임워크 없이 각자 발전 → 시너지 부족
+3. **Unknown Noises and Artifacts**: shot/read/thermal noise 등 종류가 다양하고 센서·환경마다 양상이 달라 일반화가 어려움
+4. **Nonuniform Illumination**: 한 장면 안에서도 밝은 곳과 어두운 곳이 공존해 언더/오버 노출을 동시에 다뤄야 하는 어려움
+
+### 6가지 미래 방향
+1. **Real Datasets**: 더 다양한 환경·조도의 대규모 실제 데이터셋 확보
+2. **Unified Model**: 여러 태스크·열화 패턴을 하나의 통합 모델로 해결
+3. **Pretrained LLMs**: SAM/FastSAM/T-Rex2 같은 대형 사전학습 비전모델이 저조도에서도 의외로 잘 작동함(Fig.10) → 지식 증류 또는 저하 이미지 지식 주입 방향
+4. **Multimodal Information**: 이벤트 카메라(140dB, 일반 카메라 60dB) 등 다른 센서 통합
+5. **High-Dimensional Data**: 2D RGB를 넘어 3D 데이터(포인트클라우드, 터널/광산 등)로 확장
+6. **Combining GSP and GNN**: 그래프 신호처리·그래프 신경망을 활용해 라벨 부족 상황에서도 강건한 모델 구축
+
 ---
 *(2)편에서 이어서*
