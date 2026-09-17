@@ -1,5 +1,5 @@
 ---
-title: "Deep Learning for Low-Light Vision: A Comprehensive Survey - (1)"
+title: "Deep Learning for Low-Light Vision: A Comprehensive Survey"
 date: 2026-09-16
 draft: false
 tags: ["Paper_Review", "Autonomous Driving", "Low-Light Vision", "study-log"]
@@ -94,11 +94,68 @@ flowchart TD
 
 → 결국 이 6개 패널은 "저조도엔 라벨이 없다"는 하나의 문제를 **다섯 가지 완전히 다른 철학**으로 풀고 있다는 걸 보여주는 그림.
 
-## 헷갈렸던 점들
+## Section IV. Other High-Level Low-Light Vision Tasks
 
-**Q. Feature Fusion(C절)이 Preprocessing(B절)과 뭐가 다른지 이해가 안 갔다.**
+### IV-A. Semantic Segmentation
+- 낮 세그멘테이션은 잘 되지만 야간 등 조명 불량 상황에서 기존 모델의 일반화 성능이 떨어짐
+- **Dark Zurich** : 낮/황혼/밤 정렬 이미지 데이터셋 제안 (uncertainty-aware 프레임워크)
+- **ACDC** : Dark Zurich 후속으로 나온 대규모 악조건(안개/밤/비/눈) 데이터셋
+- Retinex 기반 향상 + 세그멘테이션 결합, 향상·인식 동시 처리하는 cascaded 구조도 언급됨
 
-→ B절은 "향상을 완전히 끝낸 이미지 한 장"을 만들고 그걸 탐지기에 통째로 넣는 **순차적** 구조인 반면, C절은 완성 이미지를 만드는 과정 자체를 생략하고 **중간 특징(feature)** 단계에서 두 네트워크가 정보를 바로 섞어버리는 구조라는 게 핵심 차이였다.
+### IV-B. Object Tracking
+- UAV(드론) 추적에서 저조도로 인해 추적이 끊기는 문제를 다룸
+- **DarkLighter** : Retinex 기반 향상으로 전처리 후 UAV 트래커와 함께 최적화
+- 후속 연구: Transformer 기반 향상기+트래커를 task-driven 방식으로 결합
+- 이벤트 카메라+일반 카메라, 적외선+RGB 등 다른 센서 결합으로 저하 상황에서도 추적 유지
+
+### IV-C. Human Pose Estimation
+- 강한 조명·그림자는 보통 방해 요소지만, 오히려 **그림자를 보조 카메라처럼 활용** 해 자세·형태를 복원하는 연구도 있음 (Balan et al.)
+- 반대로 저조도는 노이즈·낮은 대비로 자세 추정이 더 어려워짐
+- **ExLPose** : 저조도 전용 자세 추정 데이터셋+모델 (Lee et al.)
+- UIRE-Net: 비지도 방식의 조도 반사율 추정으로 야간 자세 추정 지원
+
+### IV-D. Moving Object Detection (배경 분리)
+- **배경 제거(background subtraction)** 기법으로 움직이는 물체를 찾아내는 방식
+- 조명 변화·그림자·날씨 변화 등 복잡한 환경에서 정확도가 떨어지는 게 문제
+- 시각적 주의 메커니즘 + 자기조직화 신경망 결합, zero-shot 배경 모델링 등으로 강건성 개선 시도
+
+## Section V. Datasets and Evaluation Metrics for Low-Light Vision
+
+### V-A. Datasets Overview
+저조도 데이터셋을 **라벨(annotation) 유무** 기준으로 두 그룹으로 나눠 소개.
+
+### V-B. Dataset Without Annotations (라벨 없음 — LLIE 화질 평가용)
+| 데이터셋 | 설명 |
+|---|---|
+| MIT-Adobe FiveK | 5000장 RAW, 전문가 5명이 각각 보정한 버전 포함 |
+| LIME/NPE/MEF/DICM | 8~64장 소규모 실제 저조도 테스트셋 |
+| LOL (v1, v2) | 노출 조절로 찍은 저조도-정상광 페어 이미지 |
+| SID | 5094장, 짧은/긴 노출 페어 (실내 0.03~0.3lux, 실외 0.2~5lux) |
+| SICE | 589개 다중노출 시퀀스, HDR 레퍼런스 포함 |
+| SMOID / DRV | RAW 비디오 페어 데이터셋 |
+| VE-LOL-L | 합성 1000 + 실제 1500장 페어 |
+| SDSD | 레일 카메라로 두 번 촬영한 150개 페어 비디오 |
+| LLIV-Phone | 18개 스마트폰 기종, 45148장, 다양한 조명 |
+
+### V-C. Dataset With Annotations (라벨 있음 — 탐지/세그멘테이션용)
+| 데이터셋 | 설명 |
+|---|---|
+| Dark Zurich | 낮/황혼/밤 이미지, 일부 픽셀 단위 세그멘테이션 라벨 |
+| ExDARK | 실내외 10단계 조도, 클래스 라벨 + 바운딩박스 |
+| DARK FACE | 1만 장, 얼굴 바운딩박스 |
+| LLVIP | 가시광+적외선 페어, 보행자 라벨, 시공간 정렬 |
+| VE-LOL-H | 1만940장, 얼굴 라벨 |
+| ACDC | 4006장, 안개/밤/비/눈, 픽셀 단위 시맨틱 라벨 |
+| DarkVision | 정적/동적 분리, 조도 5단계, 대량 바운딩박스 |
+
+### V-D. Image Quality Evaluation Metrics (화질 평가지표)
+- **Full-Reference (정답 필요)**: PSNR(↑, 픽셀 오차 기반), MAE(↓, 평균 오차), SSIM(↑, 구조·명암·대비 유사도), LPIPS/DISTS(↓, 딥러닝 기반 지각 유사도)
+- **No-Reference (정답 불필요)**: NIQE(↓, 자연 이미지와의 통계적 거리), LOE(↓, 밝기 순서 왜곡)
+- **LLM 기반**: Q-Bench 등, LLM이 이미지 품질을 언어로 평가·점수화하는 최신 흐름
+
+### V-E. Recognition Accuracy Evaluation Metrics (인식 성능 평가지표)
+- **객체 탐지**: AP, mAP(전체 클래스 평균), AP50/AP75(IoU 임계값 0.5/0.75)
+- **세그멘테이션**: mIoU, MPA(클래스별 픽셀 정확도), Dice coefficient, Boundary F1
 
 ## VIII절 — Challenges & Future Directions 요약
 
@@ -114,7 +171,4 @@ flowchart TD
 3. **Pretrained LLMs**: SAM/FastSAM/T-Rex2 같은 대형 사전학습 비전모델이 저조도에서도 의외로 잘 작동함(Fig.10) → 지식 증류 또는 저하 이미지 지식 주입 방향
 4. **Multimodal Information**: 이벤트 카메라(140dB, 일반 카메라 60dB) 등 다른 센서 통합
 5. **High-Dimensional Data**: 2D RGB를 넘어 3D 데이터(포인트클라우드, 터널/광산 등)로 확장
-6. **Combining GSP and GNN**: 그래프 신호처리·그래프 신경망을 활용해 라벨 부족 상황에서도 강건한 모델 구축
-
----
-*(2)편에서 이어서*
+6. **Combining GSP and GNN**: 그래프 신호처리·그래프 신경망을 활용해 라벨 부족 상황에서도 강건한 모델 구축  
