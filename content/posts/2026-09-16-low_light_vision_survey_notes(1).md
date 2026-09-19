@@ -62,11 +62,6 @@ flowchart TD
 
 - **B (Preprocessing)**: 초기엔 향상과 탐지가 완전히 분리돼 있었으나(예: 밝기조절 곡선 + 사전학습된 YOLOv3), 최근엔 **end-to-end**로 묶어서 탐지 손실(detection loss)이 향상 단계에도 반영되게 함 — "예쁘게 밝히기"가 아니라 "탐지가 잘 되게 밝히기"로 목표가 진화
 - **C (Feature Fusion)**: 픽셀 공간에서 완성 이미지를 만드는 대신 특징 공간에서 바로 작업 → 효율성↑, 향상 과정의 왜곡이 탐지 단계까지 전파되는 문제↓.
-{{< details summary="예시" >}}
-- 매 프레임 화면 전체를 분석하는 대신, **각 프레임에서 1픽셀 두께의 가로선 하나만 샘플링한다.** 
-- 이 선들을 시간 순서대로 이어붙이면 도로를 위에서 훑은 듯한 하나의 이미지(road profile image)가 만들어지고, 이를 기반으로 Segmentation을 수행한다. 
-- 수행하므로써, **분석할 데이터양 자체가 줄어들어** 차량 주행 속도를 따라갈 수 있는 실시간 처리가 가능해진다.
-{{< /details >}}
 - **D (Image Darkening)**: 저조도 라벨 데이터 부족 문제(VIII절 챌린지 1번)를 정면으로 해결하려는 접근. COCO/VOC/KITTI 같은 기존 정상광 데이터셋을 인위적으로 어둡게 만들어 라벨을 그대로 물려받음
 - **E (Domain Adaptation)**: Domain Adaptation의 세 전략 
   - **Domain-invariant feature learning (GRL)**: 도메인 판별기를 속이도록 학습시켜, 저조도든 정상광이든 공통으로 통하는 특징을 뽑아냄
